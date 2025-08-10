@@ -13,9 +13,27 @@ const userSchema = Joi.object({
     .optional(),
 });
 
+const loginSchema = Joi.object({
+  email: Joi.string().email(),
+  userName: Joi.string(),
+  password: Joi.string().min(8).required(),
+}).or("email", "userName");
+
 exports.logIn = async (req, res) => {
   try {
+    const { error } = loginSchema.validate(req.body);
+    if (error) {
+      let message = error.details[0].message;
+      message = message.replace(/\"/g, "");
+      return res.status(400).json({
+        status: "fail",
+        message,
+      });
+    }
+
     const { email, userName, password } = req.body;
+
+
     const user = await User.findOne({ $or: [{ email }, { userName }] });
 
     if (!user) {
@@ -29,7 +47,7 @@ exports.logIn = async (req, res) => {
 
     // (3) Craet Token
     const token = jwt.sign(
-      { id: user._id, role: user.profileType },
+      { id: user._id,  },
       process.env.JWT_SECRET,
       { expiresIn: "1y" }
     );
@@ -38,7 +56,7 @@ exports.logIn = async (req, res) => {
 
     await user.save();
 
-    res.status(200).json({ token, user });
+    res.status(200).json({ status: "success", token, user });
   } catch (error) {
     console.error("Login Error:", error);
     res.status(500).json({
@@ -85,12 +103,12 @@ exports.signUp = async (req, res) => {
     await user.save();
 
     const token = jwt.sign(
-      { id: user._id, role: user.profileType },
+      { id: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "1y" }
     );
 
-    res.status(200).json({token , user });
+    res.status(200).json({ status: "success", token, user });
   } catch (error) {
     console.error("Signup Error:", error);
     res.status(500).json({

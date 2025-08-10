@@ -49,9 +49,10 @@ const userSchema = new Schema(
     },
     profileType: {
       type: String,
-      enum: ["admin", "instructor", "student"],
-      default: "student",
+      enum: ["admin", "player"],
+      default: "player",
     },
+    score: { type: Number, default: 0 },
     lastLogin: {
       type: Date,
       default: null,
