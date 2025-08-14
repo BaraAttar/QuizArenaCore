@@ -17,7 +17,7 @@ const Question = require("../models/Question");
 exports.getQuestionsByCategory = async (req, res) => {
   const category = req.params.categoryName;
 
-  console.log(category);
+  // console.log(category);
 
   const randomQuestions = await Question.aggregate([
     {
@@ -28,11 +28,7 @@ exports.getQuestionsByCategory = async (req, res) => {
     { $sample: { size: 10 } },
   ]);
 
-  const response = {
-    count: randomQuestions.length,
-    questions: randomQuestions,
-  };
-  res.status(200).json(response);
+  res.status(200).json(randomQuestions);
 };
 
 exports.postAnswers = async (req, res) => {
