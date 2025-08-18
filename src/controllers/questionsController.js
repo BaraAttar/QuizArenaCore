@@ -14,10 +14,28 @@ const Question = require("../models/Question");
 // Chemistry : 20
 // Biology : 20
 
+const list = [
+  "literature",
+  "programming",
+  "religion",
+  "geography",
+  "physics",
+  "astronomy",
+  "history",
+  "technology",
+  "science",
+  "mathematics",
+  "chemistry",
+  "biology",
+];
+
 exports.getQuestionsByCategory = async (req, res) => {
-  const category = req.params.categoryName;
+  // const category = req.params.categoryName;
 
   // console.log(category);
+
+  let randomIndex = Math.floor(Math.random() * list.length);
+  let category = list[randomIndex];
 
   const randomQuestions = await Question.aggregate([
     {
@@ -57,7 +75,7 @@ exports.postAnswers = async (req, res) => {
       userId,
       { $inc: { score: correctCount } }, // إذا أردت زيادة متراكمة
       { new: true, runValidators: true } // new: لإرجاع المستند بعد التحديث
-    ).select(' _id userName score');
+    ).select(" _id userName score");
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
