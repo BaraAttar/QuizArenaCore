@@ -33,7 +33,6 @@ exports.logIn = async (req, res) => {
 
     const { email, userName, password } = req.body;
 
-
     const user = await User.findOne({ $or: [{ email }, { userName }] });
 
     if (!user) {
@@ -47,7 +46,10 @@ exports.logIn = async (req, res) => {
 
     // (3) Craet Token
     const token = jwt.sign(
-      { id: user._id,  },
+      {
+        id: user._id,
+        userName,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "1y" }
     );
@@ -103,7 +105,10 @@ exports.signUp = async (req, res) => {
     await user.save();
 
     const token = jwt.sign(
-      { id: user._id },
+      {
+        id: user._id,
+        userName,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "1y" }
     );
